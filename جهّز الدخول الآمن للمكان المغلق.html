@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>جهّز الدخول الآمن للمكان المغلق</title>
+<style>
+:root{
+  --navy:#1F3864;--gold:#B08D57;--bg:#F7F5F1;--card:#FFFFFF;--text:#1d2430;--muted:#6b7280;--border:#E3E0D8;--green:#2E7D32;--red:#C62828;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#15181f;--card:#1d2129;--text:#eceef1;--muted:#9aa3af;--border:#333945;}}
+:root[data-theme="dark"]{--bg:#15181f;--card:#1d2129;--text:#eceef1;--muted:#9aa3af;--border:#333945;}
+*{box-sizing:border-box;}
+html,body{margin:0;background:var(--bg);color:var(--text);font-family:"Segoe UI",Tahoma,Arial,sans-serif;}
+.app{max-width:900px;margin:0 auto;padding:16px 14px 50px;}
+header{text-align:center;margin-bottom:8px;}
+header h1{color:var(--navy);font-size:1.25rem;margin:0 0 3px;}
+header p{color:var(--gold);font-weight:600;margin:0;font-size:.84rem;}
+.hint{font-size:.82rem;color:var(--muted);margin:6px 0 10px;text-align:center;}
+svg{width:100%;height:auto;border-radius:12px;border:1px solid var(--border);display:block;background:#dfe7f1;}
+.L{display:none;} .L.on{display:block;}
+#worker{transition:transform 1s ease-in-out;}
+#worker.in{transform:translate(-55px,185px);}
+.flow{stroke-dasharray:8 6;animation:fw 1s linear infinite;}
+@keyframes fw{to{stroke-dashoffset:-28}}
+.grid{display:grid;grid-template-columns:1.25fr 1fr;gap:12px;margin-top:12px;}
+@media(max-width:700px){.grid{grid-template-columns:1fr;}}
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px;}
+.card h3{margin:0 0 8px;font-size:.95rem;color:var(--navy);}
+.it{display:flex;gap:10px;align-items:flex-start;width:100%;text-align:right;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:8px 10px;margin-bottom:7px;cursor:pointer;color:var(--text);}
+.it .ck{width:22px;height:22px;border-radius:6px;border:2px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:.8rem;margin-top:2px;}
+.it.on{border-color:var(--green);} .it.on .ck{background:var(--green);border-color:var(--green);}
+.it b{display:block;font-size:.84rem;} .it span{font-size:.74rem;color:var(--muted);}
+.gas{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:8px;}
+.g{background:var(--bg);border-radius:10px;padding:8px 4px;text-align:center;}
+.g b{display:block;font-size:1.15rem;color:var(--navy);} .g span{font-size:.68rem;color:var(--muted);}
+.g.bad b{color:var(--red);} .g.ok b{color:var(--green);}
+.st{padding:9px;border-radius:9px;font-size:.8rem;font-weight:700;text-align:center;background:var(--bg);color:var(--muted);}
+.st.ok{background:#EAF4EA;color:var(--green);} .st.bad{background:#FCE4E4;color:var(--red);}
+.btns{display:flex;gap:8px;margin-top:10px;}
+.btn{flex:1;padding:11px;border:none;border-radius:10px;font-size:.88rem;font-weight:700;cursor:pointer;background:var(--navy);color:#fff;}
+.btn.g2{background:var(--card);color:var(--text);border:1px solid var(--border);flex:0 0 90px;}
+.res{margin-top:10px;font-size:.84rem;line-height:1.9;display:none;}
+.res.show{display:block;} .res.bad{border-right:4px solid var(--red);} .res.ok{border-right:4px solid var(--green);}
+.note{font-size:.74rem;color:var(--muted);line-height:1.9;margin-top:10px;}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <h1>🚧 جهّز الدخول الآمن للمكان المغلق</h1>
+    <p>Confined Space Entry — Permit-Required Simulation</p>
+  </header>
+  <p class="hint">فعّل عناصر السلامة التسعة واحدًا واحدًا وشاهدها تظهر على الخزان، ثم اضغط "دخول العامل". جرّب الدخول ناقصًا لترى النتيجة.</p>
+
+  <svg viewBox="0 0 900 480" id="sc">
+    <rect width="900" height="240" fill="#dfe7f1"/><rect y="240" width="900" height="240" fill="#cfd5de"/>
+    <!-- tank -->
+    <rect x="150" y="300" width="680" height="140" rx="70" fill="#f4f6fa" stroke="#1F3864" stroke-width="4"/>
+    <rect id="tankFill" x="156" y="306" width="668" height="128" rx="64" fill="rgba(198,40,40,.10)"/>
+    <rect x="478" y="296" width="84" height="12" fill="#cfd5de"/>
+    <line x1="480" y1="300" x2="480" y2="240" stroke="#1F3864" stroke-width="4"/><line x1="560" y1="300" x2="560" y2="240" stroke="#1F3864" stroke-width="4"/>
+    <line x1="410" y1="240" x2="700" y2="240" stroke="#555" stroke-width="5"/>
+    <line x1="410" y1="196" x2="410" y2="240" stroke="#555" stroke-width="4"/><line x1="700" y1="196" x2="700" y2="240" stroke="#555" stroke-width="4"/><line x1="410" y1="196" x2="700" y2="196" stroke="#555" stroke-width="3"/>
+    <!-- ladder -->
+    <line x1="520" y1="305" x2="478" y2="432" stroke="#777" stroke-width="4"/><line x1="540" y1="305" x2="498" y2="432" stroke="#777" stroke-width="4"/>
+    <g stroke="#777" stroke-width="3"><line x1="515" y1="325" x2="535" y2="325"/><line x1="508" y1="350" x2="528" y2="350"/><line x1="500" y1="375" x2="520" y2="375"/><line x1="492" y1="400" x2="512" y2="400"/></g>
+    <!-- pipes -->
+    <rect x="70" y="372" width="80" height="22" fill="#9aa3af" stroke="#555"/><rect x="62" y="362" width="12" height="42" fill="#6b7280"/>
+    <rect x="300" y="440" width="44" height="40" fill="#9aa3af" stroke="#555"/>
+    <text x="40" y="415" font-size="12" fill="#444">خط جانبي</text><text x="262" y="468" font-size="12" fill="#444">خط سفلي</text>
+
+    <g id="L_isolate" class="L"><rect x="146" y="366" width="9" height="34" fill="#C62828"/><rect x="298" y="437" width="48" height="8" fill="#C62828"/>
+      <text x="105" y="356" font-size="13" font-weight="700" fill="#C62828" text-anchor="middle">Blanked</text><text x="372" y="466" font-size="13" font-weight="700" fill="#C62828">Blanked</text></g>
+
+    <g id="L_permit" class="L"><rect x="716" y="170" width="116" height="62" rx="6" fill="#fff" stroke="#1F3864" stroke-width="2"/><text x="774" y="194" text-anchor="middle" font-size="13" font-weight="700" fill="#1F3864">تصريح دخول</text><text x="774" y="216" text-anchor="middle" font-size="18" fill="#2E7D32">✔ موقّع</text></g>
+
+    <g id="L_vent" class="L"><rect x="578" y="206" width="38" height="34" rx="6" fill="#2c6fb7"/><circle cx="597" cy="223" r="10" fill="#fff"/><text x="597" y="186" font-size="12" text-anchor="middle" fill="#1F3864" font-weight="700">تهوية</text>
+      <path class="flow" d="M590 240 Q560 280 600 330 T640 395" fill="none" stroke="#2c6fb7" stroke-width="5"/><path class="flow" d="M610 240 Q650 290 690 340 T760 390" fill="none" stroke="#2c6fb7" stroke-width="4"/></g>
+
+    <g id="L_test" class="L"><line x1="505" y1="240" x2="505" y2="345" stroke="#555" stroke-width="2" stroke-dasharray="4 3"/><rect x="487" y="345" width="36" height="24" rx="5" fill="#F1C40F" stroke="#555"/><text x="505" y="362" font-size="10" text-anchor="middle" fill="#222">GAS</text></g>
+
+    <g id="L_attendant" class="L"><g transform="translate(640 240)"><rect x="-8" y="-40" width="6" height="40" fill="#3a4a63"/><rect x="2" y="-40" width="6" height="40" fill="#3a4a63"/><rect x="-13" y="-82" width="26" height="44" rx="6" fill="#2e86c1"/><circle cx="0" cy="-94" r="11" fill="#f2c9a0"/><rect x="-11" y="-106" width="22" height="8" rx="3" fill="#F1C40F"/></g><text x="640" y="114" font-size="12" text-anchor="middle" fill="#1F3864" font-weight="700">Standby Worker</text></g>
+
+    <g id="L_alarm" class="L"><rect x="684" y="196" width="5" height="44" fill="#555"/><path d="M672 190 L694 183 L694 205 L672 198Z" fill="#C62828"/><path d="M698 188 q8 6 0 14 M704 184 q12 10 0 22" fill="none" stroke="#C62828" stroke-width="2"/></g>
+
+    <g id="L_sar" class="L"><rect x="444" y="198" width="22" height="42" rx="6" fill="#2c6fb7"/><rect x="450" y="190" width="10" height="10" fill="#444"/><text x="440" y="186" font-size="11" text-anchor="middle" fill="#1F3864" font-weight="700">Supplied-Air</text>
+      <path d="M455 240 Q420 280 380 330 T335 410" fill="none" stroke="#2c6fb7" stroke-width="4"/></g>
+
+    <g id="L_lifeline" class="L"><polygon points="470,240 570,240 520,150" fill="none" stroke="#555" stroke-width="4"/><line x1="520" y1="160" x2="520" y2="240" stroke="#555" stroke-width="3"/><circle cx="520" cy="152" r="5" fill="#555"/>
+      <path d="M520 158 Q470 300 335 400" fill="none" stroke="#C62828" stroke-width="3" stroke-dasharray="7 4"/><text x="478" y="146" font-size="12" font-weight="700" fill="#C62828">Lifeline</text></g>
+
+    <g id="L_scba" class="L"><rect x="660" y="206" width="16" height="34" rx="5" fill="#C62828"/><rect x="664" y="200" width="8" height="8" fill="#444"/><text x="668" y="262" font-size="11" text-anchor="middle" fill="#C62828" font-weight="700">Emergency SCBA</text></g>
+
+    <!-- worker -->
+    <g id="worker"><g transform="translate(380 240)">
+      <rect x="-9" y="-42" width="7" height="42" fill="#3a4a63"/><rect x="2" y="-42" width="7" height="42" fill="#3a4a63"/>
+      <rect x="-14" y="-88" width="28" height="48" rx="7" fill="#d98a2b"/><circle cx="0" cy="-100" r="12" fill="#f2c9a0"/><rect x="-12" y="-114" width="24" height="9" rx="4" fill="#F1C40F"/>
+      <g id="wMask" style="display:none"><rect x="-8" y="-98" width="16" height="9" rx="3" fill="#333"/></g>
+      <g id="wHar" style="display:none"><path d="M-14 -86 L14 -48 M14 -86 L-14 -48" stroke="#C62828" stroke-width="3"/></g>
+      <text id="wX" x="0" y="-122" font-size="20" text-anchor="middle" style="display:none">😵</text>
+    </g></g>
+  </svg>
+
+  <div class="grid">
+    <div class="card"><h3>✅ عناصر السلامة (اضغط لتفعيلها)</h3><div id="items"></div></div>
+    <div>
+      <div class="card"><h3>🧪 الغلاف الجوي داخل الخزان</h3>
+        <div class="gas"><div class="g" id="g1"><b>—</b><span>الأكسجين %</span></div><div class="g" id="g2"><b>—</b><span>قابل للاشتعال %LEL</span></div><div class="g" id="g3"><b>—</b><span>غاز سام</span></div></div>
+        <div class="st" id="gst">فعّل "اختبار الغلاف الجوي" لقياس الهواء.</div>
+      </div>
+      <div class="btns"><button class="btn" onclick="enter()">🚪 دخول العامل</button><button class="btn g2" onclick="reset()">↻ إعادة</button></div>
+      <div class="card res" id="res"></div>
+    </div>
+  </div>
+  <div class="note">العناصر وأسماؤها مأخوذة من رسم الملف (Standby Worker, Alarm Horn, Emergency SCBA, Supplied-Air, Lifeline, Blanked). نطاق الأكسجين المقبول (19.5–23.5%) وحد الغازات القابلة للاشتعال (أقل من 10% LEL) وترتيب الاختبار (أكسجين ثم قابل للاشتعال ثم سام) من OSHA 29 CFR 1910.146 وليست من الملف. المحاكاة للتدريب فقط.</div>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const IT=[
+ {k:'permit',t:'تصريح الدخول (Entry Permit)',d:'يوثّق الخطر والاحتياطات ومدة العمل ويوقّعه المسؤول.',m:'لا يوجد تصريح: دخول بلا توثيق للمخاطر أو موافقة المسؤول.'},
+ {k:'isolate',t:'عزل الخطوط بالسدادات (Blanked)',d:'يمنع وصول سوائل أو غازات للخزان عبر المواسير.',m:'الخطوط غير معزولة: قد تتدفق مواد خطرة للعامل أثناء العمل.'},
+ {k:'vent',t:'التهوية',d:'تُخفّض الغازات الخطرة وتجدّد الأكسجين.',m:'بدون تهوية يبقى الأكسجين ناقصًا والغاز مرتفعًا: فقدان وعي سريع.'},
+ {k:'test',t:'اختبار الغلاف الجوي',d:'أكسجين أولًا ثم قابل للاشتعال ثم الغازات السامة.',m:'لم يُقَس الهواء: لا أحد يعرف إن كان صالحًا للتنفس.'},
+ {k:'attendant',t:'العامل المرافق (Standby Worker)',d:'يبقى بالخارج يراقب ويطلب النجدة ولا يدخل أبدًا.',m:'لا يوجد مرافق: لا أحد يراقب العامل أو يطلب المساعدة.'},
+ {k:'alarm',t:'جهاز الإنذار (Alarm Horn)',d:'لاستدعاء المساعدة وتنبيه الموقع عند الطوارئ.',m:'لا يوجد إنذار: صعوبة استدعاء الإنقاذ بسرعة.'},
+ {k:'sar',t:'جهاز تنفس بإمداد هواء (Supplied-Air)',d:'يزوّد العامل بهواء نقي من أسطوانة خارجية.',m:'بلا جهاز تنفس: العامل يتنفس هواء الخزان مباشرة.'},
+ {k:'lifeline',t:'حزام أمان وحبل نجاة (Lifeline)',d:'لسحب العامل بأمان دون أن يدخل المنقذ.',m:'لا حبل نجاة: لا يمكن سحب العامل إن فقد وعيه.'},
+ {k:'scba',t:'جهاز تنفس ذاتي للطوارئ (Emergency SCBA)',d:'جاهز بجانب المرافق لاستخدام فريق الإنقاذ.',m:'لا يوجد SCBA للطوارئ: الإنقاذ يعرّض المنقذ نفسه للخطر.'}
+];
+let on={},entered=false;
+$('items').innerHTML=IT.map(i=>`<button class="it" id="b_${i.k}" onclick="tog('${i.k}')"><div class="ck"></div><div><b>${i.t}</b><span>${i.d}</span></div></button>`).join('');
+function tog(k){if(entered)return;on[k]=!on[k];draw();}
+function draw(){
+  IT.forEach(i=>{const b=$('b_'+i.k);b.classList.toggle('on',!!on[i.k]);b.querySelector('.ck').textContent=on[i.k]?'✓':'';const l=$('L_'+i.k);if(l)l.classList.toggle('on',!!on[i.k]);});
+  $('wMask').style.display=on.sar?'block':'none';$('wHar').style.display=on.lifeline?'block':'none';
+  const safe=!!on.vent;
+  $('tankFill').setAttribute('fill',safe?'rgba(46,125,50,.14)':'rgba(198,40,40,.12)');
+  const g1=$('g1'),g2=$('g2'),g3=$('g3'),st=$('gst');
+  if(!on.test){[g1,g2,g3].forEach(g=>{g.className='g';g.querySelector('b').textContent='—';});st.className='st';st.textContent='فعّل "اختبار الغلاف الجوي" لقياس الهواء.';return;}
+  const o2=safe?20.9:17.0,lel=safe?0:25,tox=safe?'ضمن الحد':'مرتفع';
+  g1.querySelector('b').textContent=o2.toFixed(1);g2.querySelector('b').textContent=lel;g3.querySelector('b').textContent=tox;
+  g1.className='g '+(o2>=19.5&&o2<=23.5?'ok':'bad');g2.className='g '+(lel<10?'ok':'bad');g3.className='g '+(safe?'ok':'bad');
+  st.className='st '+(safe?'ok':'bad');
+  st.textContent=safe?'✅ الهواء صالح: الأكسجين ضمن 19.5–23.5% والغاز دون 10% LEL.':'⛔ الهواء غير صالح: أكسجين ناقص وغاز مرتفع. ابدأ التهوية ثم أعد القياس.';
+}
+function enter(){
+  if(entered)return;const miss=IT.filter(i=>!on[i.k]),r=$('res');
+  entered=true;$('worker').classList.add('in');r.className='card res show '+(miss.length?'bad':'ok');
+  if(!miss.length){r.innerHTML='🏆 <b>دخول آمن.</b> كل عناصر السلامة مفعّلة: الهواء صالح، والعامل مزوّد بالهواء ومربوط بحبل نجاة ويراقبه مرافق بالخارج.';return;}
+  setTimeout(()=>{$('wX').style.display='block';},900);
+  r.innerHTML='⚠️ <b>دخول غير آمن! ('+miss.length+' عنصر ناقص)</b><br>'+miss.map(i=>'• '+i.m).join('<br>');
+}
+function reset(){on={};entered=false;$('worker').classList.remove('in');$('wX').style.display='none';$('res').className='card res';draw();}
+reset();
+</script>
+</body>
+</html>
